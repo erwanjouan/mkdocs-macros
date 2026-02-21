@@ -1,0 +1,6 @@
+services:
+  mkdocs:
+    build:
+      context: .
+    ports:
+      - "8080:80" # host_port:container_port
