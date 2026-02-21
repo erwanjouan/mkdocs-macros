@@ -1,39 +1,44 @@
 GO_HTTP_SERVER:=docus-perso-mac
+BIN_FOLDER:=.venv/bin
+
+.ONESHELL:
 
 activate:
-	python3 -m venv .venv && \
-	source .venv/bin/activate
+	(cd .. && python3 -m venv .venv && \
+	source $(BIN_FOLDER)/activate)
 
 install: activate
-	.venv/bin/python3 -m pip install -r requirements.txt
+	(cd .. && $(BIN_FOLDER)/python3 -m pip install -r mkdocs-macros/requirements.txt)
 
 init: install
-	.venv/bin/python3 -m mkdocs new .
+	(cd .. && $(BIN_FOLDER)/python3 -m mkdocs new .)
 
 serve: activate
-	.venv/bin/python3 -m mkdocs serve
+	(cd .. && $(BIN_FOLDER)/python3 -m mkdocs serve)
 
 site-build: activate
-	.venv/bin/python3 -m mkdocs build
+	(cd .. && $(BIN_FOLDER)/python3 -m mkdocs build)
 
 run: site-build
-	docker run -v $$(pwd)/site:/usr/share/nginx/html:ro -p8080:80 nginx
+	(cd .. && docker run -v $$(pwd)/site:/usr/share/nginx/html:ro -p8080:80 nginx)
 
 docker_build:
-	docker build -t some-content-nginx .
+	(cd .. && docker build -t some-content-nginx .)
 
 docker_run: docker_build
-	docker run --name some-nginx -d -p 8080:80 some-content-nginx
+	(cd .. && docker run --name some-nginx -d -p 8080:80 some-content-nginx)
 
 go-build-intel-mac: site-build
-	@mv site go/
-	@GOOS=darwin GOARCH=amd64 go build -o go/$(GO_HTTP_SERVER)-intel go/main.go
-	@rm -rf go/site
+	(cd .. && \
+	mv site mkdocs-macros/go/ && \
+	GOOS=darwin GOARCH=amd64 go build -o mkdocs-macros/go/$(GO_HTTP_SERVER)-intel mkdocs-macros/go/main.go && \
+	rm -rf mkdocs-macros/go/site)
 
 go-build: site-build
-	@mv site go/
-	@go build -o go/$(GO_HTTP_SERVER)-arm go/main.go
-	@rm -rf go/site
+	(cd .. && \
+	mv site mkdocs-macros/go/ && \
+	go build -o mkdocs-macros/go/$(GO_HTTP_SERVER)-arm mkdocs-macros/go/main.go && \
+	rm -rf mkdocs-macros/go/site)
 
 go-run: go-build
-	./$(GO_HTTP_SERVER)
+	(cd .. && ./mkdocs-macros/go/$(GO_HTTP_SERVER)-arm)
