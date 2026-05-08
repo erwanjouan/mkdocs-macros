@@ -14,7 +14,7 @@ init: install
 	(cd .. && $(BIN_FOLDER)/python3 -m mkdocs new .)
 
 serve: activate
-	(cd .. && $(BIN_FOLDER)/python3 -m mkdocs serve)
+	cd .. && $(BIN_FOLDER)/python3 -m mkdocs serve
 
 site-build: activate
 	(cd .. && $(BIN_FOLDER)/python3 -m mkdocs build)
